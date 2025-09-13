@@ -1,6 +1,9 @@
 name: Fetch MrBeast Subs
 
 on:
+  push:
+    branches:
+      - test
   schedule:
     - cron: "*/62 * * * *"
   workflow_dispatch:
