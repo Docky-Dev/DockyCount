@@ -1,11 +1,8 @@
 name: Fetch MrBeast Subs
 
 on:
-  push:
-    branches:
-      - test
   schedule:
-    - cron: "*/62 * * * *"
+    - cron: "0 * * * *"   # toutes les heures
   workflow_dispatch:
 
 permissions:
@@ -18,7 +15,7 @@ jobs:
       - name: Checkout test branch
         uses: actions/checkout@v4
         with:
-          ref: test           # ⬅️ checkout directement la branche test
+          ref: test
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Fetch subscriber count
