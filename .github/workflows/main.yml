@@ -15,13 +15,13 @@ jobs:
       - name: Decide if run
         id: decide
         run: |
-          # 60% de chance d'exécuter
-          if [ $(( RANDOM % 10 )) -lt 6 ]; then
+          # 80% de chance d'exécuter
+          if [ $(( RANDOM % 10 )) -lt 8 ]; then
             echo "run=true" >> $GITHUB_OUTPUT
-            echo "✅ Run (60% chance)"
+            echo "✅ Run (80% chance)"
           else
             echo "run=false" >> $GITHUB_OUTPUT
-            echo "❌ Skip (40% chance)"
+            echo "❌ Skip (20% chance)"
           fi
 
       - name: Checkout repo
