@@ -16,7 +16,7 @@ jobs:
         id: decide
         run: |
           # 80% de chance d'exécuter
-          if [ $(( RANDOM % 10 )) -lt 8 ]; then
+          if [ $(( RANDOM % 10 )) -lt 6 ]; then
             echo "run=true" >> $GITHUB_OUTPUT
             echo "✅ Run (80% chance)"
           else
