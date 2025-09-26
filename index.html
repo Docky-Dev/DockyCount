@@ -9,7 +9,7 @@
   <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/odometer.js/0.4.8/themes/odometer-theme-minimal.css" />
-  <link rel="icon" type="image/png" href="https://cdn.glitch.global/3646dfb4-5cb1-4c3c-9337-1d56b96025d2/Design_sans_titre-removebg-preview%20(1).png?v=1746820022653">
+  <link rel="icon" type="image/png" href="https://asset-dockyhost-2.vercel.app/bdd1b455-b433-4f59-8a07-2e0e41d5916c-modified.png">
   <meta name="description" content="Real-time YouTube subscriber counter with beautiful analytics">
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7562628849511682" crossorigin="anonymous"></script>
   <meta name="google-adsense-account" content="ca-pub-7562628849511682">
@@ -24,7 +24,7 @@
     document.head.appendChild(script);
   })();
 </script>
-  
+
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
   import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
@@ -1082,6 +1082,7 @@ function init() {
       }
     }
 
+    // Apply dark theme
     function applyDarkTheme() {
       elements.body.classList.add('dark-mode');
       if (state.subscriberChart) {
