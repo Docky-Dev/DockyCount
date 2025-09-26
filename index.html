@@ -6,10 +6,11 @@
   <title>DockyCount - YouTube Subscriber Counter</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/odometer.js/0.4.8/themes/odometer-theme-minimal.css" />
-  <link rel="icon" type="image/png" href="https://asset-dockyhost-2.vercel.app/bdd1b455-b433-4f59-8a07-2e0e41d5916c-modified.png">
+  <link rel="icon" type="image/png" href="https://cdn.glitch.global/3646dfb4-5cb1-4c3c-9337-1d56b96025d2/Design_sans_titre-removebg-preview%20(1).png?v=1746820022653">
   <meta name="description" content="Real-time YouTube subscriber counter with beautiful analytics">
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7562628849511682" crossorigin="anonymous"></script>
   <meta name="google-adsense-account" content="ca-pub-7562628849511682">
@@ -24,7 +25,6 @@
     document.head.appendChild(script);
   })();
 </script>
-  
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
@@ -68,100 +68,128 @@
 </script>
   <style>
     :root {
-      --primary: #6366f1;
-      --primary-dark: #4f46e5;
-      --primary-light: #818cf8;
-      --text: #f8fafc;
-      --text-light: #9ca3af;
-      --bg: #0f1117;
-      --card-bg: rgba(20, 22, 30, 0.8);
-      --card-border: rgba(255, 255, 255, 0.08);
-      --success: #10b981;
-      --danger: #ef4444;
-      --border: rgba(255, 255, 255, 0.1);
+      --primary: #8B5CF6;
+      --primary-dark: #7C3AED;
+      --primary-light: #A78BFA;
+      --accent: #06D6A0;
+      --accent-dark: #05B786;
+      --text: #F8FAFC;
+      --text-light: #94A3B8;
+      --bg: #0F0F23;
+      --bg-secondary: #1A1B2F;
+      --card-bg: rgba(26, 27, 47, 0.7);
+      --card-border: rgba(139, 92, 246, 0.15);
+      --success: #10B981;
+      --danger: #EF4444;
+      --border: rgba(255, 255, 255, 0.08);
+      --gradient: linear-gradient(135deg, #8B5CF6 0%, #06D6A0 100%);
+    }
+    
+    * {
+      box-sizing: border-box;
     }
     
     body {
-      font-family: 'Inter', sans-serif;
+      font-family: 'Space Grotesk', sans-serif;
       background: var(--bg);
       color: var(--text);
       scroll-behavior: smooth;
       overflow-x: hidden;
       line-height: 1.6;
+      background-image: 
+        radial-gradient(circle at 15% 50%, rgba(139, 92, 246, 0.05) 0%, transparent 20%),
+        radial-gradient(circle at 85% 30%, rgba(6, 214, 160, 0.05) 0%, transparent 20%),
+        radial-gradient(circle at 50% 80%, rgba(139, 92, 246, 0.03) 0%, transparent 20%);
     }
 
     .gradient-text {
-      background: linear-gradient(90deg, var(--primary), var(--primary-light));
+      background: var(--gradient);
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
+      font-weight: 700;
     }
 
     .gradient-bg {
-      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      background: var(--gradient);
     }
 
     .glass-card {
       background: var(--card-bg);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border-radius: 16px;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius: 20px;
       border: 1px solid var(--card-border);
-      transition: all 0.3s ease;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
     }
 
     .glass-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px -6px rgba(79, 70, 229, 0.15);
-      border-color: rgba(99, 102, 241, 0.2);
+      transform: translateY(-5px);
+      box-shadow: 0 20px 40px -10px rgba(139, 92, 246, 0.2);
+      border-color: rgba(139, 92, 246, 0.3);
     }
 
     .search-input {
-      background: rgba(15, 15, 17, 0.4);
+      background: rgba(15, 15, 35, 0.6);
       border: 1px solid var(--border);
       color: var(--text);
       transition: all 0.3s ease;
+      font-size: 16px;
+      border-radius: 12px;
+      padding: 16px 20px;
     }
 
     .search-input:focus {
       outline: none;
       border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+      box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+      background: rgba(15, 15, 35, 0.8);
     }
 
     .action-btn {
-      background: rgba(15, 15, 17, 0.4);
+      background: rgba(15, 15, 35, 0.6);
       border: 1px solid var(--border);
       color: var(--text);
       transition: all 0.3s ease;
+      border-radius: 10px;
+      padding: 10px 16px;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
     .action-btn:hover {
       background: var(--primary);
       color: white;
       border-color: var(--primary);
+      transform: translateY(-2px);
     }
 
     .channel-avatar {
       border: 2px solid var(--primary);
+      box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
     }
 
     .subscriber-count {
-      font-family: 'Inter', sans-serif !important;
+      font-family: 'Space Grotesk', sans-serif !important;
+      font-weight: 700;
     }
 
     .sidebar-favorites {
-      background: rgba(15, 15, 17, 0.9);
+      background: rgba(15, 15, 35, 0.9);
       border-right: 1px solid var(--border);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
     }
 
     .bg-grid {
       background-image: 
-        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-      background-size: 40px 40px;
+        linear-gradient(rgba(139, 92, 246, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(139, 92, 246, 0.03) 1px, transparent 1px);
+      background-size: 50px 50px;
     }
 
     .fade-in {
@@ -169,40 +197,52 @@
     }
 
     @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     ::-webkit-scrollbar {
-      width: 8px;
+      width: 6px;
     }
 
     ::-webkit-scrollbar-track {
-      background: rgba(15, 15, 17, 0.4);
+      background: rgba(15, 15, 35, 0.4);
+      border-radius: 3px;
     }
 
     ::-webkit-scrollbar-thumb {
       background: var(--primary);
-      border-radius: 4px;
+      border-radius: 3px;
     }
 
     section {
-      margin-bottom: 1.5rem;
+      margin-bottom: 2rem;
     }
 
     .btn-primary {
-      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      background: var(--gradient);
       color: white;
       transition: all 0.3s ease;
+      border: none;
+      border-radius: 12px;
+      padding: 16px 24px;
+      font-weight: 600;
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
     }
 
     .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 15px -3px rgba(99, 102, 241, 0.3);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(139, 92, 246, 0.4);
     }
     
     .card-content {
-      padding: 1.5rem;
+      padding: 2rem;
     }
 
     @media (max-width: 900px) {
@@ -216,13 +256,13 @@
       }
 
       .card-content {
-        padding: 1rem;
+        padding: 1.5rem;
       }
     }
     
     @media (min-width: 900px) {
       main.container {
-        margin-left: 260px;
+        margin-left: 280px;
       }
     }
 
@@ -232,7 +272,7 @@
 
     @keyframes float {
       0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-5px); }
+      50% { transform: translateY(-8px); }
     }
 
     button:focus, input:focus {
@@ -248,8 +288,8 @@
       border: 2px solid rgba(255, 255, 255, 0.3);
       border-radius: 50%;
       border-top: 2px solid var(--primary);
-      width: 16px;
-      height: 16px;
+      width: 20px;
+      height: 20px;
       animation: spin 1s linear infinite;
     }
     
@@ -260,45 +300,57 @@
     
     .toast {
       z-index: 1000;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      border-radius: 10px;
+      padding: 12px 20px;
+      font-weight: 500;
     }
     
     .theme-toggle {
       cursor: pointer;
-      width: 40px;
-      height: 20px;
+      width: 50px;
+      height: 26px;
+      position: relative;
     }
     
     .theme-toggle .slider {
       border-radius: 34px;
       transition: .4s;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
     }
     
     .theme-toggle input:checked + .slider {
-      background-color: var(--primary);
+      background: var(--primary);
     }
     
     .theme-toggle .slider:before {
       position: absolute;
       content: "";
-      height: 16px;
-      width: 16px;
-      left: 2px;
-      bottom: 2px;
+      height: 18px;
+      width: 18px;
+      left: 4px;
+      bottom: 3px;
       background-color: white;
       transition: .4s;
       border-radius: 50%;
     }
     
     .theme-toggle input:checked + .slider:before {
-      transform: translateX(20px);
+      transform: translateX(22px);
     }
 
     .user-avatar {
-      width: 32px;
-      height: 32px;
+      width: 36px;
+      height: 36px;
       border-radius: 50%;
       cursor: pointer;
+      border: 2px solid transparent;
+      transition: all 0.3s ease;
+    }
+
+    .user-avatar:hover {
+      border-color: var(--primary);
     }
 
     .user-menu {
@@ -307,73 +359,389 @@
       right: 0;
       background: var(--card-bg);
       border: 1px solid var(--card-border);
-      border-radius: 8px;
+      border-radius: 12px;
       padding: 0.5rem;
-      min-width: 150px;
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      min-width: 180px;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
       z-index: 100;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .pulse {
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.4); }
+      70% { box-shadow: 0 0 0 10px rgba(139, 92, 246, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0); }
+    }
+
+    .floating-shapes {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      overflow: hidden;
+    }
+
+    .shape {
+      position: absolute;
+      border-radius: 50%;
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(6, 214, 160, 0.1) 100%);
+      animation: float 15s infinite linear;
+    }
+
+    .shape:nth-child(1) {
+      width: 300px;
+      height: 300px;
+      top: 10%;
+      left: 5%;
+      animation-delay: 0s;
+    }
+
+    .shape:nth-child(2) {
+      width: 200px;
+      height: 200px;
+      top: 60%;
+      left: 80%;
+      animation-delay: -5s;
+      animation-duration: 20s;
+    }
+
+    .shape:nth-child(3) {
+      width: 150px;
+      height: 150px;
+      top: 80%;
+      left: 10%;
+      animation-delay: -10s;
+      animation-duration: 25s;
+    }
+
+    .stats-card {
+      background: rgba(26, 27, 47, 0.5);
+      border-radius: 16px;
+      padding: 1.5rem;
+      border: 1px solid rgba(139, 92, 246, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    .stats-card:hover {
+      border-color: rgba(139, 92, 246, 0.3);
+      transform: translateY(-3px);
+    }
+
+    .stats-value {
+      font-size: 2rem;
+      font-weight: 700;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .stats-label {
+      font-size: 0.875rem;
+      color: var(--text-light);
+      margin-top: 0.5rem;
+    }
+
+    .channel-card {
+      transition: all 0.3s ease;
+      cursor: pointer;
+      border: 1px solid transparent;
+    }
+
+    .channel-card:hover {
+      transform: translateY(-5px);
+      border-color: var(--primary);
+      box-shadow: 0 10px 30px rgba(139, 92, 246, 0.2);
+    }
+
+    .nav-item {
+      position: relative;
+      padding: 0.75rem 1rem;
+      border-radius: 10px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .nav-item:hover {
+      background: rgba(139, 92, 246, 0.1);
+    }
+
+    .nav-item.active {
+      background: rgba(139, 92, 246, 0.2);
+      color: var(--primary);
+    }
+
+    .nav-item.active::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 4px;
+      height: 60%;
+      background: var(--primary);
+      border-radius: 0 4px 4px 0;
+    }
+
+    .feature-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(139, 92, 246, 0.1);
+      margin-bottom: 1rem;
+    }
+
+    .feature-icon svg {
+      width: 30px;
+      height: 30px;
+      color: var(--primary);
+    }
+
+    .mobile-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: var(--bg-secondary);
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-around;
+      padding: 0.75rem;
+      z-index: 40;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    }
+
+    .mobile-nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0.5rem;
+      border-radius: 10px;
+      transition: all 0.3s ease;
+      color: var(--text-light);
+      font-size: 0.75rem;
+    }
+
+    .mobile-nav-item.active {
+      color: var(--primary);
+      background: rgba(139, 92, 246, 0.1);
+    }
+
+    .mobile-nav-item svg {
+      width: 20px;
+      height: 20px;
+      margin-bottom: 0.25rem;
+    }
+
+    .progress-bar {
+      height: 6px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-top: 0.5rem;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--gradient);
+      border-radius: 3px;
+      transition: width 0.5s ease;
+    }
+
+    .tab-button {
+      padding: 0.75rem 1.5rem;
+      border-radius: 10px;
+      background: transparent;
+      border: none;
+      color: var(--text-light);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-weight: 500;
+    }
+
+    .tab-button.active {
+      background: rgba(139, 92, 246, 0.2);
+      color: var(--primary);
+    }
+
+    .compare-bar {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem;
+      background: rgba(26, 27, 47, 0.7);
+      border-radius: 16px;
+      margin-bottom: 1.5rem;
+    }
+
+    .compare-channel {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex: 1;
+    }
+
+    .compare-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+    }
+
+    .compare-vs {
+      font-weight: 700;
+      color: var(--primary);
+      padding: 0 1rem;
     }
   </style>
 </head>
-<body class="bg-grid min-h-screen flex flex-col">
-  <aside class="sidebar-favorites fixed top-0 left-0 w-64 h-full z-40 p-6 hidden md:block" id="sidebar-favorites">
-    <div class="text-xl font-bold gradient-text mb-4">Your Favorite Channels</div>
-    <div class="favorites-list overflow-y-auto max-h-[calc(100vh-120px)]" id="favorites-list">
-      <div class="text-gray-500 text-sm">Sign in to save favorites</div>
+<body class="min-h-screen flex flex-col">
+  <!-- Floating Background Shapes -->
+  <div class="floating-shapes">
+    <div class="shape"></div>
+    <div class="shape"></div>
+    <div class="shape"></div>
+  </div>
+
+  <!-- Sidebar Navigation -->
+  <aside class="sidebar-favorites fixed top-0 left-0 w-80 h-full z-40 p-6 hidden lg:block">
+    <div class="flex flex-col h-full">
+      <!-- Logo -->
+      <div class="mb-8">
+        <div class="text-2xl font-bold gradient-text flex items-center">
+          <img src="https://asset-dockyhost-2.vercel.app/bdd1b455-b433-4f59-8a07-2e0e41d5916c-modified.png" alt="DockyCount Logo" class="h-8 mr-3">
+          DockyCount
+        </div>
+        <p class="text-sm text-gray-400 mt-2">Track YouTube subscribers in real-time</p>
+      </div>
+
+      <!-- Navigation -->
+      <nav class="mb-8">
+        <div class="nav-item active">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+          </svg>
+          Dashboard
+        </div>
+        <div class="nav-item">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+          </svg>
+          Analytics
+        </div>
+        <div class="nav-item">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+          </svg>
+          Compare
+        </div>
+        <div class="nav-item">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+          </svg>
+          Favorites
+        </div>
+      </nav>
+
+      <!-- Favorites Section -->
+      <div class="flex-1">
+        <div class="text-lg font-semibold mb-4 gradient-text">Your Favorite Channels</div>
+        <div class="favorites-list overflow-y-auto max-h-[calc(100vh-320px)]" id="favorites-list">
+          <div class="text-gray-500 text-sm p-4 text-center">Sign in to save favorites</div>
+        </div>
+      </div>
+
+      <!-- User Section -->
+      <div class="pt-4 border-t border-gray-800">
+        <div class="flex items-center justify-between">
+          <div id="auth-container">
+            <button id="sign-in-button" class="btn-primary text-sm px-4 py-2">Sign In</button>
+            <div id="user-profile" class="hidden items-center">
+              <img id="user-avatar" class="user-avatar mr-3" src="" alt="User Avatar">
+              <div>
+                <div id="user-name" class="text-sm font-medium"></div>
+                <button id="sign-out-button" class="text-xs text-gray-400 hover:text-white">Sign Out</button>
+              </div>
+            </div>
+          </div>
+          <label class="theme-toggle relative w-12 h-6 flex items-center">
+            <input type="checkbox" id="theme-switch" class="sr-only">
+            <span class="slider absolute top-0 left-0 right-0 bottom-0 rounded-full transition-colors"></span>
+          </label>
+        </div>
+      </div>
     </div>
   </aside>
 
-  <nav class="sticky top-0 bg-black/90 backdrop-blur-lg z-50 border-b border-gray-800">
-    <div class="max-w-7xl mx-auto flex justify-between items-center px-6 py-3">
-      <a href="/" class="text-xl font-bold gradient-text flex items-center">
-        <img src="https://asset-dockyhost-2.vercel.app/bdd1b455-b433-4f59-8a07-2e0e41d5916c-modified.png" alt="DockyCount Logo" class="h-6 mr-2">
-        DockyCount
-      </a>
-      <div class="flex items-center space-x-3">
-        <div class="relative" id="auth-container">
-          <button id="sign-in-button" class="btn-primary text-sm px-3 py-1 rounded-lg">Sign In</button>
-          <div id="user-profile" class="hidden items-center">
-            <img id="user-avatar" class="user-avatar mr-2" src="" alt="User Avatar">
-            <span id="user-name" class="text-sm mr-2"></span>
-            <button id="sign-out-button" class="text-sm text-gray-400 hover:text-white">Sign Out</button>
-          </div>
-        </div>
-        <button class="md:hidden text-gray-400 hover:text-white" id="mobile-menu-button">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-          </svg>
-        </button>
-        <label class="theme-toggle relative w-10 h-5 flex items-center">
-          <input type="checkbox" id="theme-switch" class="sr-only">
-          <span class="slider absolute top-0 left-0 right-0 bottom-0 rounded-full transition-colors bg-gray-600"></span>
-          <span class="absolute h-3 w-3 bg-white rounded-full transition-transform top-1 left-1" id="theme-knob"></span>
-        </label>
-      </div>
+  <!-- Mobile Navigation -->
+  <div class="mobile-nav lg:hidden">
+    <div class="mobile-nav-item active">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+      </svg>
+      Home
     </div>
-  </nav>
+    <div class="mobile-nav-item">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+      </svg>
+      Compare
+    </div>
+    <div class="mobile-nav-item">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+      </svg>
+      Favorites
+    </div>
+    <div class="mobile-nav-item">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+      </svg>
+      Settings
+    </div>
+  </div>
 
-  <main class="container max-w-5xl mx-auto px-4 py-20 flex-grow">
-    <section class="text-center mb-10">
-      <div class="mb-8">
-        <h1 class="text-4xl md:text-5xl font-bold mb-4 gradient-text">DockyCount</h1>
-        <p class="text-lg text-gray-300 max-w-2xl mx-auto">
-          Track real-time subscriber counts and growth analytics for any YouTube channel
-        </p>
-      </div>
-    </section>
+  <!-- Main Content -->
+  <main class="container max-w-6xl mx-auto px-4 py-6 lg:py-10 flex-grow lg:ml-80">
+    <!-- Header -->
+    <header class="mb-8">
+      <h1 class="text-3xl lg:text-4xl font-bold mb-2 gradient-text">YouTube Subscriber Tracker</h1>
+      <p class="text-lg text-gray-300">Monitor real-time subscriber counts and growth analytics</p>
+    </header>
 
-    <section class="glass-card mb-8" data-aos="fade-up" id="main-search-section">
+    <!-- Search Section -->
+    <section class="glass-card mb-8" data-aos="fade-up">
       <div class="card-content">
-        <div class="flex flex-col gap-4">
-          <div class="flex flex-col md:flex-row gap-3 w-full">
-            <input type="text" class="search-input flex-1 px-4 py-3 rounded-lg" id="channel-input" placeholder="Enter YouTube channel name or URL" onkeypress="handleKeyPress(event)">
-            <button class="btn-primary font-medium rounded-lg px-5 py-3 flex items-center justify-center min-w-[120px]" onclick="fetchChannelData()">
-              <span id="search-text">Search</span>
+        <div class="flex flex-col gap-5">
+          <div class="flex flex-col md:flex-row gap-4 w-full">
+            <div class="flex-1 relative">
+              <input type="text" class="search-input w-full" id="channel-input" placeholder="Enter YouTube channel name or URL" onkeypress="handleKeyPress(event)">
+              <div class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </div>
+            </div>
+            <button class="btn-primary font-medium min-w-[140px]" onclick="fetchChannelData()">
+              <span id="search-text">Search Channel</span>
               <div class="loader hidden ml-2" id="loader"></div>
             </button>
           </div>
-          <div class="flex justify-center mt-2">
+          <div class="flex justify-center">
             <button class="text-sm text-gray-400 hover:text-white flex items-center" id="show-compare-search-btn" onclick="showCompareSearchBar()">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
@@ -385,14 +753,15 @@
       </div>
     </section>
 
+    <!-- Compare Search Section -->
     <section class="glass-card mb-8 hidden" id="compare-search-section" data-aos="fade-up">
       <div class="card-content">
-        <div class="flex flex-col gap-5 w-full">
+        <div class="flex flex-col gap-6 w-full">
           <div>
-            <h3 class="text-lg font-semibold mb-3">Compare Channels</h3>
+            <h3 class="text-lg font-semibold mb-4">Compare Channels</h3>
             <div class="flex flex-col md:flex-row gap-3">
-              <input type="text" class="search-input flex-1 px-4 py-3 rounded-lg" id="compare-input-1" placeholder="First channel name or URL">
-              <button class="btn-primary font-medium rounded-lg px-4 py-3 flex items-center justify-center min-w-[100px]" onclick="fetchCompareSearch(1)">
+              <input type="text" class="search-input flex-1" id="compare-input-1" placeholder="First channel name or URL">
+              <button class="btn-primary font-medium min-w-[100px]" onclick="fetchCompareSearch(1)">
                 Search
               </button>
             </div>
@@ -401,8 +770,8 @@
           
           <div>
             <div class="flex flex-col md:flex-row gap-3">
-              <input type="text" class="search-input flex-1 px-4 py-3 rounded-lg" id="compare-input-2" placeholder="Second channel name or URL">
-              <button class="btn-primary font-medium rounded-lg px-4 py-3 flex items-center justify-center min-w-[100px]" onclick="fetchCompareSearch(2)">
+              <input type="text" class="search-input flex-1" id="compare-input-2" placeholder="Second channel name or URL">
+              <button class="btn-primary font-medium min-w-[100px]" onclick="fetchCompareSearch(2)">
                 Search
               </button>
             </div>
@@ -410,46 +779,48 @@
           </div>
           
           <div class="flex justify-end gap-3 mt-4">
-            <button class="action-btn px-4 py-2 rounded-lg text-sm" onclick="hideCompareSearchBar()">Cancel</button>
+            <button class="action-btn" onclick="hideCompareSearchBar()">Cancel</button>
           </div>
         </div>
       </div>
     </section>
 
+    <!-- Results Section -->
     <section class="glass-card mb-8 hidden" id="results-section" data-aos="fade-up">
       <div class="card-content">
         <h2 class="text-xl font-semibold mb-5">Search Results</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="results-grid"></div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="results-grid"></div>
       </div>
     </section>
 
+    <!-- Counter Section -->
     <section class="glass-card mb-8 hidden" id="counter-section" data-aos="fade-up">
       <div class="card-content">
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
           <div class="flex items-center mb-4 md:mb-0">
-            <img src="" alt="Channel Avatar" class="counter-avatar w-14 h-14 rounded-full mr-4" id="channel-avatar">
+            <img src="" alt="Channel Avatar" class="counter-avatar w-16 h-16 rounded-full mr-4 channel-avatar pulse" id="channel-avatar">
             <div>
-              <h3 class="channel-title text-lg font-semibold" id="channel-name"></h3>
-              <button class="favorite-star text-xl mt-1 bg-transparent border-none cursor-pointer text-yellow-400" id="favorite-star" title="Add to favorites">
+              <h3 class="channel-title text-xl font-semibold" id="channel-name"></h3>
+              <button class="favorite-star text-2xl mt-1 bg-transparent border-none cursor-pointer text-yellow-400 hover:text-yellow-300 transition-colors" id="favorite-star" title="Add to favorites">
                 &#9734;
               </button>
             </div>
           </div>
           <div class="flex flex-wrap gap-2">
-            <button class="action-btn px-3 py-2 rounded-lg flex items-center text-sm" onclick="shareChannel()">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <button class="action-btn" onclick="shareChannel()">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
               </svg>
               Share
             </button>
-            <button class="action-btn px-3 py-2 rounded-lg flex items-center text-sm" onclick="toggleChart()" id="toggle-chart-button">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <button class="action-btn" onclick="toggleChart()" id="toggle-chart-button">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
               </svg>
               Chart
             </button>
-            <button class="action-btn px-3 py-2 rounded-lg flex items-center text-sm" onclick="addToCompare()" id="compare-button">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <button class="action-btn" onclick="addToCompare()" id="compare-button">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
               </svg>
               Compare
@@ -463,22 +834,23 @@
         </div>
 
         <div class="flex justify-center gap-3 mt-6">
-          <button class="action-btn px-3 py-2 rounded-lg flex items-center text-sm" onclick="refreshCounter()">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <button class="action-btn" onclick="refreshCounter()">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
             </svg>
             Refresh
           </button>
-          <button class="action-btn px-3 py-2 rounded-lg flex items-center text-sm" onclick="activateMinimalMode()">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2" />
+          <button class="action-btn" onclick="activateMinimalMode()">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2 2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2" />
             </svg>
             Minimal
-            </button>
+          </button>
         </div>
       </div>
     </section>
 
+    <!-- Chart Section -->
     <section class="glass-card mb-8 hidden" id="chart-section" data-aos="fade-up">
       <div class="card-content">
         <h3 class="text-lg font-semibold mb-5">Subscriber Growth</h3>
@@ -488,12 +860,13 @@
       </div>
     </section>
 
+    <!-- Compare Section -->
     <section class="glass-card mb-8 hidden" id="compare-section" data-aos="fade-up">
       <div class="card-content">
         <div class="flex justify-between items-center mb-6">
           <h3 class="text-lg font-semibold">Channel Comparison</h3>
-          <button class="action-btn px-3 py-2 rounded-lg flex items-center text-sm" onclick="closeCompare()">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <button class="action-btn" onclick="closeCompare()">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
             Close
@@ -502,8 +875,8 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6" id="compare-channels">
         </div>
         <div class="flex justify-center">
-          <button class="action-btn px-3 py-2 rounded-lg flex items-center text-sm" onclick="refreshCompare()">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <button class="action-btn" onclick="refreshCompare()">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
             </svg>
             Refresh
@@ -511,14 +884,55 @@
         </div>
       </div>
     </section>
+
+    <!-- Features Section -->
+    <section class="mb-8" data-aos="fade-up">
+      <h2 class="text-2xl font-bold mb-6 text-center gradient-text">Why Choose DockyCount?</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="glass-card p-6 text-center">
+          <div class="feature-icon mx-auto">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold mb-2">Real-time Updates</h3>
+          <p class="text-gray-400">Get live subscriber counts updated every few seconds</p>
+        </div>
+        <div class="glass-card p-6 text-center">
+          <div class="feature-icon mx-auto">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold mb-2">Channel Comparison</h3>
+          <p class="text-gray-400">Compare multiple channels side by side</p>
+        </div>
+        <div class="glass-card p-6 text-center">
+          <div class="feature-icon mx-auto">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" />
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold mb-2">Growth Analytics</h3>
+          <p class="text-gray-400">Track subscriber growth with detailed charts</p>
+        </div>
+      </div>
+    </section>
   </main>
 
+  <!-- Footer -->
   <footer class="px-6 py-8 border-t border-gray-800 bg-black/50 mt-auto">
-    <div class="max-w-5xl mx-auto">
+    <div class="max-w-6xl mx-auto">
       <div class="flex flex-col md:flex-row justify-between items-center">
         <div class="mb-4 md:mb-0">
           <a href="#" class="text-xl font-bold gradient-text">DockyCount</a>
           <p class="text-gray-500 text-sm mt-1">Real-time YouTube analytics</p>
+        </div>
+        <div class="flex space-x-4">
+          <a href="#" class="text-gray-400 hover:text-white transition-colors">Privacy Policy</a>
+          <a href="#" class="text-gray-400 hover:text-white transition-colors">Terms of Service</a>
+          <a href="#" class="text-gray-400 hover:text-white transition-colors">Contact</a>
         </div>
       </div>
       
@@ -526,15 +940,26 @@
         <p class="text-gray-500 text-sm">
           © 2025 DockyCount. All rights reserved.
         </p>
+        <div class="flex space-x-4 mt-4 md:mt-0">
+          <a href="#" class="text-gray-400 hover:text-white transition-colors">
+            <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/></svg>
+          </a>
+          <a href="#" class="text-gray-400 hover:text-white transition-colors">
+            <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z"/></svg>
+          </a>
+        </div>
       </div>
     </div>
   </footer>
 
-  <div class="toast fixed bottom-6 left-1/2 transform -translate-x-1/2 px-5 py-2 rounded-lg hidden bg-indigo-600 text-white text-sm" id="toast"></div>
+  <!-- Toast Notification -->
+  <div class="toast fixed bottom-6 left-1/2 transform -translate-x-1/2 px-5 py-3 rounded-lg hidden bg-gradient-to-r from-purple-600 to-teal-500 text-white text-sm font-medium shadow-lg" id="toast"></div>
 
   <!-- Scripts -->
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
   <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+  
+  <!-- Le reste du code JavaScript reste inchangé -->
   <script>
     // Constants
     const API_BASE_URL = 'https://backend.mixerno.space/api/youtube/estv3/';
@@ -900,7 +1325,7 @@ function init() {
       
       channels.forEach((channel) => {
         const channelElement = document.createElement("div");
-        channelElement.className = "glass-card p-4 cursor-pointer transition-all hover:scale-105";
+        channelElement.className = "glass-card p-4 cursor-pointer transition-all hover:scale-105 channel-card";
         channelElement.innerHTML = `
           <img src="${channel[3]}" alt="${channel[0]}" class="channel-avatar w-16 h-16 rounded-full mx-auto mb-3">
           <div class="channel-name text-center font-medium">${channel[0]}</div>
@@ -931,8 +1356,8 @@ function init() {
           datasets: [{
             label: 'Subscribers',
             data: [],
-            borderColor: '#818cf8',
-            backgroundColor: 'rgba(129, 140, 248, 0.1)',
+            borderColor: '#8B5CF6',
+            backgroundColor: 'rgba(139, 92, 246, 0.1)',
             borderWidth: 3,
             tension: 0.1,
             pointRadius: 0,
@@ -1087,11 +1512,10 @@ function init() {
     function applyDarkTheme() {
       elements.body.classList.add('dark-mode');
       if (state.subscriberChart) {
-        state.subscriberChart.data.datasets[0].borderColor = '#818cf8';
-        state.subscriberChart.data.datasets[0].backgroundColor = 'rgba(129, 140, 248, 0.1)';
+        state.subscriberChart.data.datasets[0].borderColor = '#8B5CF6';
+        state.subscriberChart.data.datasets[0].backgroundColor = 'rgba(139, 92, 246, 0.1)';
         state.subscriberChart.update();
       }
-      elements.themeKnob.style.transform = 'translateX(1.25rem)';
     }
 
     // Apply light theme
@@ -1102,7 +1526,6 @@ function init() {
         state.subscriberChart.data.datasets[0].backgroundColor = 'rgba(99, 102, 241, 0.1)';
         state.subscriberChart.update();
       }
-      elements.themeKnob.style.transform = 'translateX(0)';
     }
 
     // Toggle theme function
@@ -1173,20 +1596,20 @@ function init() {
       list.innerHTML = '';
       
       if (!state.currentUser) {
-        list.innerHTML = '<div class="text-gray-500 text-sm">Sign in to save favorites</div>';
+        list.innerHTML = '<div class="text-gray-500 text-sm p-4 text-center">Sign in to save favorites</div>';
         return;
       }
       
       if (state.userFavorites.length === 0) {
-        list.innerHTML = '<div class="text-gray-500 text-sm">No favorite channels yet.</div>';
+        list.innerHTML = '<div class="text-gray-500 text-sm p-4 text-center">No favorite channels yet.</div>';
         return;
       }
       
       state.userFavorites.forEach(fav => {
         const item = document.createElement('div');
-        item.className = 'favorite-channel flex items-center p-2 rounded-lg hover:bg-gray-800 cursor-pointer transition-colors mb-2';
+        item.className = 'favorite-channel flex items-center p-3 rounded-lg hover:bg-gray-800 cursor-pointer transition-colors mb-2';
         item.innerHTML = `
-          <img src="${fav.avatar}" class="favorite-avatar w-8 h-8 rounded-full mr-3" alt="${fav.name}">
+          <img src="${fav.avatar}" class="favorite-avatar w-10 h-10 rounded-full mr-3" alt="${fav.name}">
           <span class="favorite-name text-sm flex-1 truncate">${fav.name}</span>
           <button class="favorite-remove text-red-500 bg-transparent border-none cursor-pointer text-lg ml-2" title="Remove">&times;</button>
         `;
@@ -1218,14 +1641,14 @@ function init() {
     function toggleChart() {
       if (elements.chartSection.classList.contains('hidden')) {
         elements.chartSection.classList.remove('hidden');
-        elements.toggleChartButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg> Hide Chart';
+        elements.toggleChartButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg> Hide Chart';
         if (!state.subscriberChart && state.historicalData.length > 0) {
           initializeChart();
           updateChart(state.historicalData[state.historicalData.length - 1].count);
         }
       } else {
         elements.chartSection.classList.add('hidden');
-        elements.toggleChartButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg> Show Chart';
+        elements.toggleChartButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg> Show Chart';
       }
     }
 
