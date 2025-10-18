@@ -979,6 +979,38 @@
       userName: document.getElementById("user-name")
     };
 
+// Fonction pour toggle la sidebar mobile
+function toggleMobileSidebar() {
+  const sidebar = document.querySelector('.sidebar-favorites');
+  sidebar.classList.toggle('mobile-open');
+}
+
+// Fermer la sidebar quand on clique sur un lien (mobile)
+function closeMobileSidebar() {
+  const sidebar = document.querySelector('.sidebar-favorites');
+  if (window.innerWidth <= 1024) {
+    sidebar.classList.remove('mobile-open');
+  }
+}
+
+// Mettez à jour vos event listeners pour fermer la sidebar
+function setupEventListeners() {
+  // ... votre code existant ...
+  
+  // Fermer la sidebar au clic sur les liens
+  document.querySelectorAll('.nav-item, .favorite-channel').forEach(item => {
+    item.addEventListener('click', closeMobileSidebar);
+  });
+  
+  // Fermer la sidebar quand on redimensionne la fenêtre
+  window.addEventListener('resize', function() {
+    if (window.innerWidth > 1024) {
+      const sidebar = document.querySelector('.sidebar-favorites');
+      sidebar.classList.remove('mobile-open');
+    }
+  });
+}
+    
     // Initialize the application
     function init() {
       AOS.init({
