@@ -180,17 +180,40 @@
     }
 
 .sidebar-favorites {
-  background: rgba(15, 15, 35, 0.95) !important; /* Plus opaque */
-  backdrop-filter: blur(20px) !important;
-  -webkit-backdrop-filter: blur(20px) !important;
+  background: rgba(15, 15, 35, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border-right: 1px solid var(--border);
-  z-index: 50 !important; /* Z-index plus élevé */
-  position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
-  width: 280px !important;
-  height: 100vh !important;
-  overflow-y: auto !important;
+  z-index: 1000;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 280px;
+  height: 100vh;
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
+}
+
+@media (min-width: 1024px) {
+  .sidebar-favorites {
+    transform: translateX(0);
+  }
+}
+
+.sidebar-favorites.mobile-open {
+  transform: translateX(0);
+}
+
+main.container {
+  width: 100%;
+  transition: margin-left 0.3s ease;
+}
+
+@media (min-width: 1024px) {
+  main.container {
+    margin-left: 280px;
+    width: calc(100% - 280px);
+  }
 }
 
     .bg-grid {
@@ -741,9 +764,16 @@ body {
   <!-- Main Content -->
   <main class="container max-w-6xl mx-auto px-4 py-6 lg:py-10 flex-grow lg:ml-80">
     <!-- Header -->
-    <header class="mb-8">
-      <h1 class="text-3xl lg:text-4xl font-bold mb-2 gradient-text">YouTube Subscriber Tracker</h1>
-      <p class="text-lg text-gray-300">Monitor real-time subscriber counts and growth analytics</p>
+    <header class="mb-8 flex justify-between items-center">
+      <div>
+        <h1 class="text-3xl lg:text-4xl font-bold mb-2 gradient-text">YouTube Subscriber Tracker</h1>
+        <p class="text-lg text-gray-300">Monitor real-time subscriber counts and growth analytics</p>
+      </div>
+      <button id="mobile-menu-btn" class="lg:hidden p-2 rounded-lg hover:bg-gray-800">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
     </header>
 
     <!-- Search Section -->
@@ -975,33 +1005,26 @@ body {
     
     // DOM elements cache
     const elements = {
-      channelInput: document.getElementById("channel-input"),
-      loader: document.getElementById("loader"),
-      searchText: document.getElementById("search-text"),
-      resultsSection: document.getElementById("results-section"),
-      resultsGrid: document.getElementById("results-grid"),
-      counterSection: document.getElementById("counter-section"),
-      channelAvatar: document.getElementById("channel-avatar"),
-      channelName: document.getElementById("channel-name"),
-      subscriberCount: document.getElementById("subscriber-count"),
-      subscriberChange: document.getElementById("subscriber-change"),
-      toggleChartButton: document.getElementById("toggle-chart-button"),
-      chartSection: document.getElementById("chart-section"),
-      toast: document.getElementById("toast"),
-      themeSwitch: document.getElementById("theme-switch"),
-      themeKnob: document.getElementById("theme-knob"),
-      body: document.body,
-      compareSection: document.getElementById("compare-section"),
-      compareChannelsContainer: document.getElementById("compare-channels"),
-      authContainer: document.getElementById("auth-container"),
-      signInButton: document.getElementById("sign-in-button"),
-      signOutButton: document.getElementById("sign-out-button"),
-      userProfile: document.getElementById("user-profile"),
-      userAvatar: document.getElementById("user-avatar"),
-      userName: document.getElementById("user-name")
+      get channelInput() { return document.getElementById("channel-input") },
+      get loader() { return document.getElementById("loader") },
+      get searchText() { return document.getElementById("search-text") },
+      get resultsSection() { return document.getElementById("results-section") },
+      get resultsGrid() { return document.getElementById("results-grid") },
+      get counterSection() { return document.getElementById("counter-section") },
+      get channelAvatar() { return document.getElementById("channel-avatar") },
+      get channelName() { return document.getElementById("channel-name") },
+      get subscriberCount() { return document.getElementById("subscriber-count") },
+      get subscriberChange() { return document.getElementById("subscriber-change") },
+      get toggleChartButton() { return document.getElementById("toggle-chart-button") },
+      get chartSection() { return document.getElementById("chart-section") },
+      get toast() { return document.getElementById("toast") },
+      get themeSwitch() { return document.getElementById("theme-switch") },
+      get body() { return document.body },
+      get compareSection() { return document.getElementById("compare-section") },
+      get compareChannelsContainer() { return document.getElementById("compare-channels") }
     };
 
-// Fonction pour toggle la sidebar mobile
+    // Fonction pour toggle la sidebar mobile
 function toggleMobileSidebar() {
   const sidebar = document.querySelector('.sidebar-favorites');
   sidebar.classList.toggle('mobile-open');
@@ -1017,167 +1040,221 @@ function closeMobileSidebar() {
 
 // Mettez à jour vos event listeners pour fermer la sidebar
 function setupEventListeners() {
-  // ... votre code existant ...
+  // Keyboard shortcuts
+  document.addEventListener('keydown', handleKeyboardShortcuts);
   
-  // Fermer la sidebar au clic sur les liens
-  document.querySelectorAll('.nav-item, .favorite-channel').forEach(item => {
-    item.addEventListener('click', closeMobileSidebar);
-  });
+  // Theme toggle
+  const themeSwitch = document.getElementById("theme-switch");
+  if (themeSwitch) {
+    themeSwitch.addEventListener('change', toggleTheme);
+  }
   
-  // Fermer la sidebar quand on redimensionne la fenêtre
-  window.addEventListener('resize', function() {
-    if (window.innerWidth > 1024) {
-      const sidebar = document.querySelector('.sidebar-favorites');
-      sidebar.classList.remove('mobile-open');
-    }
-  });
-}
-    
-    // Initialize the application
-    function init() {
-      AOS.init({
-        once: true,
-        duration: 600,
-        easing: 'ease-out'
-      });
+  // Favorite star
+  const favoriteStar = document.getElementById('favorite-star');
+  if (favoriteStar) {
+    favoriteStar.onclick = function() {
+      if (!state.channelId || !elements.channelName.textContent) return;
       
+      if (!state.currentUser) {
+        showToast("Please sign in to save favorites");
+        return;
+      }
+      
+      if (isFavorite(state.channelId)) {
+        removeFavorite(state.channelId);
+      } else {
+        addFavorite(
+          state.channelId,
+          elements.channelName.textContent,
+          elements.channelAvatar.src
+        );
+      }
+    };
+  }
+
+  // Mobile menu button
+  const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+  if (mobileMenuBtn) {
+    mobileMenuBtn.addEventListener('click', toggleMobileSidebar);
+  }
+  
+  // Handle browser navigation
+  window.addEventListener('popstate', handleNavigation);
+}
+
+// Modifier la fonction init pour s'assurer que Firebase est chargé
+function init() {
+  try {
+    AOS.init({
+      once: true,
+      duration: 600,
+      easing: 'ease-out'
+    });
+    
+    // Attendre que le DOM soit complètement chargé
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        setupEventListeners();
+        checkUrlFragment();
+        renderFavoritesSidebar();
+        updateFavoriteStar();
+      });
+    } else {
       setupEventListeners();
       checkUrlFragment();
       renderFavoritesSidebar();
       updateFavoriteStar();
-      
-      // Apply dark theme by default
-      applyDarkTheme();
-      
-      // Initialize Firebase Auth state listener
-      initAuth();
     }
     
-    // Initialize Firebase Authentication
+    applyDarkTheme();
+    
+    // Vérification de Firebase avec timeout
+    const FIREBASE_TIMEOUT = 5000; // 5 secondes
+    const firebaseCheck = new Promise((resolve, reject) => {
+      if (window.firebase) {
+        resolve();
+      }
+      
+      const interval = setInterval(() => {
+        if (window.firebase) {
+          clearInterval(interval);
+          resolve();
+        }
+      }, 100);
+      
+      setTimeout(() => {
+        clearInterval(interval);
+        reject(new Error('Firebase failed to load'));
+      }, FIREBASE_TIMEOUT);
+    });
+
+    firebaseCheck
+      .then(() => {
+        initAuth();
+      })
+      .catch((error) => {
+        console.error('Firebase initialization error:', error);
+        showToast('Error loading authentication system');
+      });
+      
+  } catch (error) {
+    console.error('Initialization error:', error);
+    showToast('Error initializing application');
+  }
+}
+    
+    // Firebase Authentication Setup
     function initAuth() {
-      window.firebase.onAuthStateChanged(window.firebase.auth, (user) => {
+      const auth = window.firebase.auth;
+      const signInButton = document.getElementById('sign-in-button');
+      const signOutButton = document.getElementById('sign-out-button');
+      const userProfile = document.getElementById('user-profile');
+      const authContainer = document.getElementById('auth-container');
+
+      // Handle sign in
+      signInButton.addEventListener('click', async () => {
+        try {
+          const result = await window.firebase.signInWithPopup(auth, window.firebase.provider);
+          const user = result.user;
+          
+          // Create or update user document in Firestore
+          const userDocRef = window.firebase.doc(window.firebase.db, 'users', user.uid);
+          const userDoc = await window.firebase.getDoc(userDocRef);
+          
+          if (!userDoc.exists()) {
+            await window.firebase.setDoc(userDocRef, {
+              email: user.email,
+              displayName: user.displayName,
+              photoURL: user.photoURL,
+              favorites: []
+            });
+          }
+          
+          showToast('Successfully signed in!');
+        } catch (error) {
+          console.error('Sign in error:', error);
+          showToast('Error signing in');
+        }
+      });
+
+      // Handle sign out
+      signOutButton.addEventListener('click', async () => {
+        try {
+          await window.firebase.signOut(auth);
+          state.userFavorites = [];
+          state.currentUser = null;
+          renderFavoritesSidebar();
+          updateFavoriteStar();
+          showToast('Successfully signed out!');
+        } catch (error) {
+          console.error('Sign out error:', error);
+          showToast('Error signing out');
+        }
+      });
+
+      // Listen for auth state changes
+      window.firebase.onAuthStateChanged(auth, async (user) => {
         if (user) {
           // User is signed in
           state.currentUser = user;
-          updateAuthUI(user);
-          loadUserFavorites(user.uid);
+          signInButton.classList.add('hidden');
+          userProfile.classList.remove('hidden');
+          document.getElementById('user-name').textContent = user.displayName;
+          document.getElementById('user-avatar').src = user.photoURL;
+          
+          // Fetch user favorites
+          try {
+            const userDocRef = window.firebase.doc(window.firebase.db, 'users', user.uid);
+            const userDoc = await window.firebase.getDoc(userDocRef);
+            if (userDoc.exists()) {
+              state.userFavorites = userDoc.data().favorites || [];
+              renderFavoritesSidebar();
+              updateFavoriteStar();
+            }
+          } catch (error) {
+            console.error('Error fetching user data:', error);
+            showToast('Error loading favorites');
+          }
         } else {
           // User is signed out
           state.currentUser = null;
           state.userFavorites = [];
-          updateAuthUI(null);
+          signInButton.classList.remove('hidden');
+          userProfile.classList.add('hidden');
           renderFavoritesSidebar();
+          updateFavoriteStar();
         }
       });
-      
-      // Add event listeners for auth buttons
-      elements.signInButton.addEventListener('click', signInWithGoogle);
-      elements.signOutButton.addEventListener('click', signOutUser);
-    }
-    
-    // Sign in with Google
-    async function signInWithGoogle() {
-      try {
-        const result = await window.firebase.signInWithPopup(window.firebase.auth, window.firebase.provider);
-        // User signed in successfully
-        showToast("Signed in successfully!");
-      } catch (error) {
-        console.error("Error signing in:", error);
-        showToast("Error signing in. Please try again.");
-      }
-    }
-    
-    // Sign out user
-    async function signOutUser() {
-      try {
-        await window.firebase.signOut(window.firebase.auth);
-        showToast("Signed out successfully!");
-      } catch (error) {
-        console.error("Error signing out:", error);
-        showToast("Error signing out. Please try again.");
-      }
-    }
-    
-    // Update authentication UI based on user state
-    function updateAuthUI(user) {
-      if (user) {
-        // User is signed in
-        elements.signInButton.classList.add('hidden');
-        elements.userProfile.classList.remove('hidden');
-        elements.userAvatar.src = user.photoURL || 'https://via.placeholder.com/32';
-        elements.userName.textContent = user.displayName || 'User';
-      } else {
-        // User is signed out
-        elements.signInButton.classList.remove('hidden');
-        elements.userProfile.classList.add('hidden');
-      }
-    }
-    
-    // Load user favorites from Firestore
-    async function loadUserFavorites(userId) {
-      try {
-        const userDocRef = window.firebase.doc(window.firebase.db, 'users', userId);
-        const userDoc = await window.firebase.getDoc(userDocRef);
-        
-        if (userDoc.exists()) {
-          state.userFavorites = userDoc.data().favorites || [];
-        } else {
-          // Create user document if it doesn't exist
-          await window.firebase.setDoc(userDocRef, { favorites: [] });
-          state.userFavorites = [];
-        }
-        
-        renderFavoritesSidebar();
-        updateFavoriteStar();
-      } catch (error) {
-        console.error("Error loading user favorites:", error);
-        showToast("Error loading favorites");
-      }
     }
 
-    // Modify your init function to check if Firebase is ready
-function init() {
-  AOS.init({
-    once: true,
-    duration: 600,
-    easing: 'ease-out'
-  });
+async function saveUserFavorites() {
+  if (!state.currentUser) return;
   
-  setupEventListeners();
-  checkUrlFragment();
-  renderFavoritesSidebar();
-  updateFavoriteStar();
-  
-  applyDarkTheme();
-  
-  // Wait for Firebase to be ready
-  if (window.firebase) {
-    initAuth();
-  } else {
-    // Check every 100ms if Firebase is ready
-    const checkFirebase = setInterval(() => {
-      if (window.firebase) {
-        clearInterval(checkFirebase);
-        initAuth();
-      }
-    }, 100);
+  try {
+    const userDocRef = window.firebase.doc(window.firebase.db, 'users', state.currentUser.uid);
+    
+    // First check if the document exists
+    const docSnap = await window.firebase.getDoc(userDocRef);
+    
+    if (docSnap.exists()) {
+      // Document exists, update it
+      await window.firebase.updateDoc(userDocRef, {
+        favorites: state.userFavorites
+      });
+    } else {
+      // Document doesn't exist, create it
+      await window.firebase.setDoc(userDocRef, {
+        email: state.currentUser.email || null,
+        displayName: state.currentUser.displayName || null,
+        photoURL: state.currentUser.photoURL || null,
+        favorites: state.userFavorites || []
+      });
+    }
+  } catch (error) {
+    console.error("Error saving user favorites:", error);
+    showToast("Error saving favorites");
   }
 }
-    
-    // Save user favorites to Firestore
-    async function saveUserFavorites() {
-      if (!state.currentUser) return;
-      
-      try {
-        const userDocRef = window.firebase.doc(window.firebase.db, 'users', state.currentUser.uid);
-        await window.firebase.updateDoc(userDocRef, {
-          favorites: state.userFavorites
-        });
-      } catch (error) {
-        console.error("Error saving user favorites:", error);
-        showToast("Error saving favorites");
-      }
-    }
     
     // Set up event listeners
     function setupEventListeners() {
@@ -1185,32 +1262,41 @@ function init() {
       document.addEventListener('keydown', handleKeyboardShortcuts);
       
       // Theme toggle
-      elements.themeSwitch.addEventListener('change', toggleTheme);
+      const themeSwitch = document.getElementById("theme-switch");
+      if (themeSwitch) {
+        themeSwitch.addEventListener('change', toggleTheme);
+      }
       
-      // Favorite star click handler
-      document.getElementById('favorite-star').onclick = function() {
-        if (!state.channelId || !elements.channelName.textContent) return;
-        
-        if (!state.currentUser) {
-          showToast("Please sign in to save favorites");
-          return;
-        }
-        
-        if (isFavorite(state.channelId)) {
-          removeFavorite(state.channelId);
-        } else {
-          addFavorite(
-            state.channelId,
-            elements.channelName.textContent,
-            elements.channelAvatar.src
-          );
-        }
-      };
+      // Favorite star
+      const favoriteStar = document.getElementById('favorite-star');
+      if (favoriteStar) {
+        favoriteStar.onclick = function() {
+          if (!state.channelId || !elements.channelName.textContent) return;
+          
+          if (!state.currentUser) {
+            showToast("Please sign in to save favorites");
+            return;
+          }
+          
+          if (isFavorite(state.channelId)) {
+            removeFavorite(state.channelId);
+          } else {
+            addFavorite(
+              state.channelId,
+              elements.channelName.textContent,
+              elements.channelAvatar.src
+            );
+          }
+        };
+      }
 
-      // Mobile menu toggle
-      document.getElementById('mobile-menu-button').addEventListener('click', toggleMobileMenu);
+      // Mobile menu button
+      const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+      if (mobileMenuBtn) {
+        mobileMenuBtn.addEventListener('click', toggleMobileSidebar);
+      }
       
-      // Handle browser navigation (back/forward buttons)
+      // Handle browser navigation
       window.addEventListener('popstate', handleNavigation);
     }
     
@@ -1267,7 +1353,7 @@ function init() {
       state.intervalId = null;
       elements.counterSection.classList.add('hidden');
       elements.chartSection.classList.add('hidden');
-      elements.toggleChartButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg> Show Chart';
+      elements.toggleChartButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2z" /></svg> Show Chart';
       state.historicalData = [];
       document.title = "DockyCount - YouTube Subscriber Counter";
     }
@@ -1617,6 +1703,705 @@ function init() {
     // Render sidebar favorites
     function renderFavoritesSidebar() {
       const list = document.getElementById('favorites-list');
+      if (!list) return;
+
+      list.innerHTML = '';
+      
+           
+      if (!state.currentUser) {
+        list.innerHTML = '<div class="text-gray-500 text-sm p-4 text-center">Sign in to save favorites</div>';
+        return;
+      }
+      
+      if (!state.userFavorites?.length) {
+        list.innerHTML = '<div class="text-gray-500 text-sm p-4 text-center">No favorite channels yet</div>';
+        return;
+      }
+
+      state.userFavorites.forEach(fav => {
+        const item = document.createElement('div');
+        item.className = 'favorite-channel flex items-center p-3 rounded-lg hover:bg-gray-800 cursor-pointer transition-colors mb-2';
+        item.innerHTML = `
+          <img src="${fav.avatar}" class="w-10 h-10 rounded-full mr-3" alt="${fav.name}" onerror="this.src='https://via.placeholder.com/40'">
+          <span class="flex-1 truncate">${fav.name}</span>
+          <button class="remove-favorite p-1 hover:text-red-500 transition-colors" title="Remove from favorites">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+            </svg>
+          </button>
+        `;
+
+        item.querySelector('.remove-favorite').addEventListener('click', (e) => {
+          e.stopPropagation();
+          removeFavorite(fav.id);
+        });
+
+        item.addEventListener('click', () => {
+          state.channelId = fav.id;
+          resetCounter();
+          startCounter();
+          if (window.innerWidth < 1024) {
+            document.querySelector('.sidebar-favorites').classList.remove('mobile-open');
+          }
+        });
+
+        list.appendChild(item);
+      });
+    }
+
+    // Modifier la fonction setupEventListeners pour inclure des vérifications
+function setupEventListeners() {
+  // Keyboard shortcuts
+  document.addEventListener('keydown', handleKeyboardShortcuts);
+  
+  // Theme toggle
+  const themeSwitch = document.getElementById("theme-switch");
+  if (themeSwitch) {
+    themeSwitch.addEventListener('change', toggleTheme);
+  }
+  
+  // Favorite star
+  const favoriteStar = document.getElementById('favorite-star');
+  if (favoriteStar) {
+    favoriteStar.onclick = function() {
+      if (!state.channelId || !elements.channelName.textContent) return;
+      
+      if (!state.currentUser) {
+        showToast("Please sign in to save favorites");
+        return;
+      }
+      
+      if (isFavorite(state.channelId)) {
+        removeFavorite(state.channelId);
+      } else {
+        addFavorite(
+          state.channelId,
+          elements.channelName.textContent,
+          elements.channelAvatar.src
+        );
+      }
+    };
+  }
+
+  // Mobile menu button
+  const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+  if (mobileMenuBtn) {
+    mobileMenuBtn.addEventListener('click', toggleMobileSidebar);
+  }
+  
+  // Handle browser navigation
+  window.addEventListener('popstate', handleNavigation);
+}
+
+// Modifier la fonction init pour s'assurer que Firebase est chargé
+function init() {
+  try {
+    AOS.init({
+      once: true,
+      duration: 600,
+      easing: 'ease-out'
+    });
+    
+    // Attendre que le DOM soit complètement chargé
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        setupEventListeners();
+        checkUrlFragment();
+        renderFavoritesSidebar();
+        updateFavoriteStar();
+      });
+    } else {
+      setupEventListeners();
+      checkUrlFragment();
+      renderFavoritesSidebar();
+      updateFavoriteStar();
+    }
+    
+    applyDarkTheme();
+    
+    // Vérification de Firebase avec timeout
+    const FIREBASE_TIMEOUT = 5000; // 5 secondes
+    const firebaseCheck = new Promise((resolve, reject) => {
+      if (window.firebase) {
+        resolve();
+      }
+      
+      const interval = setInterval(() => {
+        if (window.firebase) {
+          clearInterval(interval);
+          resolve();
+        }
+      }, 100);
+      
+      setTimeout(() => {
+        clearInterval(interval);
+        reject(new Error('Firebase failed to load'));
+      }, FIREBASE_TIMEOUT);
+    });
+
+    firebaseCheck
+      .then(() => {
+        initAuth();
+      })
+      .catch((error) => {
+        console.error('Firebase initialization error:', error);
+        showToast('Error loading authentication system');
+      });
+      
+  } catch (error) {
+    console.error('Initialization error:', error);
+    showToast('Error initializing application');
+  }
+}
+    
+    // Firebase Authentication Setup
+    function initAuth() {
+      const auth = window.firebase.auth;
+      const signInButton = document.getElementById('sign-in-button');
+      const signOutButton = document.getElementById('sign-out-button');
+      const userProfile = document.getElementById('user-profile');
+      const authContainer = document.getElementById('auth-container');
+
+      // Handle sign in
+      signInButton.addEventListener('click', async () => {
+        try {
+          const result = await window.firebase.signInWithPopup(auth, window.firebase.provider);
+          const user = result.user;
+          
+          // Create or update user document in Firestore
+          const userDocRef = window.firebase.doc(window.firebase.db, 'users', user.uid);
+          const userDoc = await window.firebase.getDoc(userDocRef);
+          
+          if (!userDoc.exists()) {
+            await window.firebase.setDoc(userDocRef, {
+              email: user.email,
+              displayName: user.displayName,
+              photoURL: user.photoURL,
+              favorites: []
+            });
+          }
+          
+          showToast('Successfully signed in!');
+        } catch (error) {
+          console.error('Sign in error:', error);
+          showToast('Error signing in');
+        }
+      });
+
+      // Handle sign out
+      signOutButton.addEventListener('click', async () => {
+        try {
+          await window.firebase.signOut(auth);
+          state.userFavorites = [];
+          state.currentUser = null;
+          renderFavoritesSidebar();
+          updateFavoriteStar();
+          showToast('Successfully signed out!');
+        } catch (error) {
+          console.error('Sign out error:', error);
+          showToast('Error signing out');
+        }
+      });
+
+      // Listen for auth state changes
+      window.firebase.onAuthStateChanged(auth, async (user) => {
+        if (user) {
+          // User is signed in
+          state.currentUser = user;
+          signInButton.classList.add('hidden');
+          userProfile.classList.remove('hidden');
+          document.getElementById('user-name').textContent = user.displayName;
+          document.getElementById('user-avatar').src = user.photoURL;
+          
+          // Fetch user favorites
+          try {
+            const userDocRef = window.firebase.doc(window.firebase.db, 'users', user.uid);
+            const userDoc = await window.firebase.getDoc(userDocRef);
+            if (userDoc.exists()) {
+              state.userFavorites = userDoc.data().favorites || [];
+              renderFavoritesSidebar();
+              updateFavoriteStar();
+            }
+          } catch (error) {
+            console.error('Error fetching user data:', error);
+            showToast('Error loading favorites');
+          }
+        } else {
+          // User is signed out
+          state.currentUser = null;
+          state.userFavorites = [];
+          signInButton.classList.remove('hidden');
+          userProfile.classList.add('hidden');
+          renderFavoritesSidebar();
+          updateFavoriteStar();
+        }
+      });
+    }
+
+    // Save user favorites to Firestore
+    async function saveUserFavorites() {
+      if (!state.currentUser) return;
+      
+      try {
+        const userDocRef = window.firebase.doc(window.firebase.db, 'users', state.currentUser.uid);
+        await window.firebase.updateDoc(userDocRef, {
+          favorites: state.userFavorites
+        });
+      } catch (error) {
+        console.error("Error saving user favorites:", error);
+        showToast("Error saving favorites");
+      }
+    }
+    
+    // Set up event listeners
+    function setupEventListeners() {
+      // Keyboard shortcuts
+      document.addEventListener('keydown', handleKeyboardShortcuts);
+      
+      // Theme toggle
+      const themeSwitch = document.getElementById("theme-switch");
+      if (themeSwitch) {
+        themeSwitch.addEventListener('change', toggleTheme);
+      }
+      
+      // Favorite star
+      const favoriteStar = document.getElementById('favorite-star');
+      if (favoriteStar) {
+        favoriteStar.onclick = function() {
+          if (!state.channelId || !elements.channelName.textContent) return;
+          
+          if (!state.currentUser) {
+            showToast("Please sign in to save favorites");
+            return;
+          }
+          
+          if (isFavorite(state.channelId)) {
+            removeFavorite(state.channelId);
+          } else {
+            addFavorite(
+              state.channelId,
+              elements.channelName.textContent,
+              elements.channelAvatar.src
+            );
+          }
+        };
+      }
+
+      // Mobile menu button
+      const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+      if (mobileMenuBtn) {
+        mobileMenuBtn.addEventListener('click', toggleMobileSidebar);
+      }
+      
+      // Handle browser navigation
+      window.addEventListener('popstate', handleNavigation);
+    }
+    
+    // Toggle mobile menu
+    function toggleMobileMenu() {
+      const sidebar = document.getElementById('sidebar-favorites');
+      sidebar.classList.toggle('hidden');
+    }
+    
+    // Handle navigation events
+    function handleNavigation() {
+      const urlFragment = window.location.hash.slice(1);
+      if (urlFragment && urlFragment !== state.channelId) {
+        resetCounter();
+        state.channelId = urlFragment;
+        startCounter();
+        updateFavoriteStar();
+      } else if (!urlFragment) {
+        resetCounter();
+        updateFavoriteStar();
+      }
+      renderFavoritesSidebar();
+    }
+    
+    // Check URL fragment for channel ID
+    function checkUrlFragment() {
+      const urlFragment = window.location.hash.slice(1);
+      if (urlFragment) {
+        state.channelId = urlFragment;
+        startCounter();
+      }
+    }
+    
+    // Start the counter
+    function startCounter() {
+      elements.counterSection.classList.remove('hidden');
+      
+      if (!state.odometer) {
+        state.odometer = new Odometer({ 
+          el: elements.subscriberCount, 
+          value: 0,
+          format: '(,ddd)',
+          theme: 'minimal'
+        });
+      }
+      
+      fetchStatsData();
+      state.intervalId = setInterval(fetchStatsData, UPDATE_INTERVAL);
+    }
+    
+    // Reset the counter
+    function resetCounter() {
+      clearInterval(state.intervalId);
+      state.intervalId = null;
+      elements.counterSection.classList.add('hidden');
+      elements.chartSection.classList.add('hidden');
+      elements.toggleChartButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2z" /></svg> Show Chart';
+      state.historicalData = [];
+      document.title = "DockyCount - YouTube Subscriber Counter";
+    }
+    
+    // Refresh counter manually
+    function refreshCounter() {
+      if (state.channelId) {
+        fetchStatsData();
+        showToast("Counter refreshed", 2000);
+      }
+    }
+    
+    // Show toast notification
+    function showToast(message, duration = 3000) {
+      elements.toast.textContent = message;
+      elements.toast.classList.remove('hidden');
+      
+      setTimeout(() => {
+        elements.toast.classList.add('hidden');
+      }, duration);
+    }
+    
+    // Handle key press in search input
+    function handleKeyPress(event) {
+      if (event.key === "Enter") {
+        fetchChannelData();
+      }
+    }
+    
+    // Handle keyboard shortcuts
+    function handleKeyboardShortcuts(event) {
+      // Ctrl+Enter to search
+      if (event.ctrlKey && event.key === 'Enter') {
+        fetchChannelData();
+      }
+      // Escape to clear search
+      if (event.key === 'Escape') {
+        elements.channelInput.value = '';
+      }
+    }
+    
+    // Fetch channel data based on search input
+    async function fetchChannelData() {
+      const channelName = elements.channelInput.value.trim();
+      if (!channelName) {
+        showToast("Please enter a channel name");
+        return;
+      }
+
+      elements.loader.classList.remove('hidden');
+      elements.searchText.classList.add('hidden');
+      
+      try {
+        const response = await fetch(`${SEARCH_API_URL}${encodeURIComponent(channelName)}`);
+        if (!response.ok) throw new Error('Network response was not ok');
+        
+        const data = await response.json();
+        elements.loader.classList.add('hidden');
+        elements.searchText.classList.remove('hidden');
+        
+        if (!data.list?.length) {
+          showToast("Channel not found");
+          return;
+        }
+
+        displayChannelResults(data.list);
+      } catch (error) {
+        console.error("Error fetching channel data:", error);
+        elements.loader.classList.add('hidden');
+        elements.searchText.classList.remove('hidden');
+        showToast("Error fetching channel data");
+      }
+    }
+    
+    // Display channel search results
+    function displayChannelResults(channels) {
+      elements.resultsGrid.innerHTML = "";
+      elements.resultsSection.classList.remove('hidden');
+      
+      channels.forEach((channel) => {
+        const channelElement = document.createElement("div");
+        channelElement.className = "glass-card p-4 cursor-pointer transition-all hover:scale-105 channel-card";
+        channelElement.innerHTML = `
+          <img src="${channel[3]}" alt="${channel[0]}" class="channel-avatar w-16 h-16 rounded-full mx-auto mb-3">
+          <div class="channel-name text-center font-medium">${channel[0]}</div>
+        `;
+        
+        channelElement.onclick = () => {
+          const newUrl = `${window.location.origin}${window.location.pathname}#${channel[2]}`;
+          window.history.pushState({}, '', newUrl);
+
+          state.channelId = channel[2];
+          resetCounter();
+          startCounter();
+          elements.resultsSection.classList.add('hidden');
+        };
+        
+        elements.resultsGrid.appendChild(channelElement);
+      });
+    }
+    
+    // Initialize chart
+    function initializeChart() {
+      const ctx = document.getElementById('subscriberChart').getContext('2d');
+      
+      state.subscriberChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: [],
+          datasets: [{
+            label: 'Subscribers',
+            data: [],
+            borderColor: '#8B5CF6',
+            backgroundColor: 'rgba(139, 92, 246, 0.1)',
+            borderWidth: 3,
+            tension: 0.1,
+            pointRadius: 0,
+            fill: true
+          }]
+        },
+        options: {
+          animation: false,
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false
+            },
+            tooltip: {
+              mode: 'index',
+              intersect: false,
+              callbacks: {
+                label: function(context) {
+                  return `${context.parsed.y.toLocaleString()}`;
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              display: false,
+              grid: {
+                display: false
+              }
+            },
+            y: {
+              display: false,
+              grid: {
+                color: 'rgba(255, 255, 255, 0.1)',
+                drawBorder: false
+              },
+              ticks: {
+                color: 'rgba(255, 255, 255, 0.6)',
+                callback: function(value) {
+                  if (value >= 1000000) {
+                    return (value / 1000000).toFixed(1) + 'M';
+                  }
+                  if (value >= 1000) {
+                    return (value / 1000).toFixed(1) + 'K';
+                  }
+                  return value;
+                }
+              }
+            }
+          },
+          interaction: {
+            mode: 'nearest',
+            axis: 'x',
+            intersect: false
+          }
+        }
+      });
+    }
+    
+    // Update chart with new data
+    function updateChart(count) {
+      const now = new Date();
+      const timeString = now.toLocaleTimeString();
+      
+      // Add new data point
+      state.historicalData.push({
+        time: timeString,
+        count: count
+      });
+      
+      // Keep only the last MAX_DATA_POINTS
+      if (state.historicalData.length > MAX_DATA_POINTS) {
+        state.historicalData.shift();
+      }
+      
+      // Initialize chart if not already done
+      if (!state.subscriberChart) {
+        initializeChart();
+      }
+      
+      // Update chart data
+      state.subscriberChart.data.labels = state.historicalData.map(data => data.time);
+      state.subscriberChart.data.datasets[0].data = state.historicalData.map(data => data.count);
+      state.subscriberChart.update();
+    }
+    
+    // Fetch stats data for the current channel
+    async function fetchStatsData() {
+      try {
+        const response = await fetch(`${API_BASE_URL}${state.channelId}`);
+        
+        if (response.ok) {
+          const data = await response.json();
+          
+          if (data?.items?.length > 0) {
+            const channel = data.items[0];
+            updateChannelInfo(channel);
+            
+            if (channel.statistics && typeof channel.statistics.subscriberCount === "number") {
+              const subscriberCount = channel.statistics.subscriberCount;
+              updateSubscriberCount(subscriberCount);
+              
+              // Calculate and display subscriber change
+              if (state.lastSubscriberCount > 0) {
+                const change = subscriberCount - state.lastSubscriberCount;
+                updateSubscriberChange(change);
+              }
+              
+              state.lastSubscriberCount = subscriberCount;
+              updateChart(subscriberCount);
+            }
+          }
+        } else {
+          console.error("Failed to fetch stats data: ", response.statusText);
+        }
+      } catch (error) {
+        console.error("Error fetching stats data:", error);
+      }
+    }
+    
+    // Update subscriber count display
+    function updateSubscriberCount(count) {
+      if (!state.odometer) {
+        state.odometer = new Odometer({ 
+          el: elements.subscriberCount, 
+          value: count,
+          format: '(,ddd)',
+          theme: 'minimal'
+        });
+      } else {
+        state.odometer.update(count);
+      }
+    }
+
+    // Update subscriber change display
+    function updateSubscriberChange(change) {
+      const changeElement = elements.subscriberChange;
+      if (change === 0) {
+        changeElement.innerHTML = "&rarr; No change";
+        changeElement.className = "subscriber-change text-gray-400";
+      } else if (change > 0) {
+        changeElement.innerHTML = `&uarr; +${change.toLocaleString()}`;
+        changeElement.className = "subscriber-change text-green-500";
+      } else {
+        changeElement.innerHTML = `&darr; ${change.toLocaleString()}`;
+        changeElement.className = "subscriber-change text-red-500";
+      }
+    }
+
+    // Apply dark theme
+    function applyDarkTheme() {
+      elements.body.classList.add('dark-mode');
+      if (state.subscriberChart) {
+        state.subscriberChart.data.datasets[0].borderColor = '#8B5CF6';
+        state.subscriberChart.data.datasets[0].backgroundColor = 'rgba(139, 92, 246, 0.1)';
+        state.subscriberChart.update();
+      }
+    }
+
+    // Apply light theme
+    function applyLightTheme() {
+      elements.body.classList.remove('dark-mode');
+      if (state.subscriberChart) {
+        state.subscriberChart.data.datasets[0].borderColor = '#6366f1';
+        state.subscriberChart.data.datasets[0].backgroundColor = 'rgba(99, 102, 241, 0.1)';
+        state.subscriberChart.update();
+      }
+    }
+
+    // Toggle theme function
+    function toggleTheme() {
+      state.isDarkTheme = !state.isDarkTheme;
+      localStorage.setItem('theme', state.isDarkTheme ? 'dark' : 'light');
+      if (state.isDarkTheme) {
+        applyDarkTheme();
+      } else {
+        applyLightTheme();
+      }
+    }
+    
+    // FAVORITES SYSTEM WITH FIREBASE
+    // Add channel to favorites
+    function addFavorite(channelId, name, avatar) {
+      if (!state.currentUser) {
+        showToast("Please sign in to save favorites");
+        return;
+      }
+      
+      if (!state.userFavorites.some(f => f.id === channelId)) {
+        state.userFavorites.push({ id: channelId, name, avatar });
+        saveUserFavorites();
+        showToast("Channel added to favorites!", 1500);
+        updateFavoriteStar();
+        renderFavoritesSidebar();
+      }
+    }
+
+    // Remove channel from favorites
+    function removeFavorite(channelId) {
+      state.userFavorites = state.userFavorites.filter(f => f.id !== channelId);
+      saveUserFavorites();
+      showToast("Channel removed from favorites!", 1500);
+      updateFavoriteStar();
+      renderFavoritesSidebar();
+    }
+
+    // Check if channel is favorite
+    function isFavorite(channelId) {
+      return state.userFavorites.some(f => f.id === channelId);
+    }
+
+    // Update favorite star UI
+    function updateFavoriteStar() {
+      const star = document.getElementById('favorite-star');
+      if (!state.channelId) {
+        star.classList.add('inactive');
+        star.innerHTML = '&#9734;';
+        star.title = "Add to favorites";
+        return;
+      }
+      if (isFavorite(state.channelId)) {
+        star.classList.remove('inactive');
+        star.innerHTML = '&#9733;';
+        star.title = "Remove from favorites";
+      } else {
+        star.classList.add('inactive');
+        star.innerHTML = '&#9734;';
+        star.title = "Add to favorites";
+      }
+    }
+
+    // Render sidebar favorites
+    function renderFavoritesSidebar() {
+      const list = document.getElementById('favorites-list');
+      if (!list) return;
+
       list.innerHTML = '';
       
       if (!state.currentUser) {
@@ -1624,30 +2409,734 @@ function init() {
         return;
       }
       
-      if (state.userFavorites.length === 0) {
-        list.innerHTML = '<div class="text-gray-500 text-sm p-4 text-center">No favorite channels yet.</div>';
+      if (!state.userFavorites?.length) {
+        list.innerHTML = '<div class="text-gray-500 text-sm p-4 text-center">No favorite channels yet</div>';
         return;
       }
-      
+
       state.userFavorites.forEach(fav => {
         const item = document.createElement('div');
         item.className = 'favorite-channel flex items-center p-3 rounded-lg hover:bg-gray-800 cursor-pointer transition-colors mb-2';
         item.innerHTML = `
-          <img src="${fav.avatar}" class="favorite-avatar w-10 h-10 rounded-full mr-3" alt="${fav.name}">
-          <span class="favorite-name text-sm flex-1 truncate">${fav.name}</span>
-          <button class="favorite-remove text-red-500 bg-transparent border-none cursor-pointer text-lg ml-2" title="Remove">&times;</button>
+          <img src="${fav.avatar}" class="w-10 h-10 rounded-full mr-3" alt="${fav.name}" onerror="this.src='https://via.placeholder.com/40'">
+          <span class="flex-1 truncate">${fav.name}</span>
+          <button class="remove-favorite p-1 hover:text-red-500 transition-colors" title="Remove from favorites">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+            </svg>
+          </button>
         `;
-        // Click to show counter for this channel
-        item.onclick = (e) => {
-          if (e.target.classList.contains('favorite-remove')) return;
-          window.location.hash = '#' + fav.id;
-          handleNavigation();
-        };
-        // Remove favorite
-        item.querySelector('.favorite-remove').onclick = (e) => {
+
+        item.querySelector('.remove-favorite').addEventListener('click', (e) => {
           e.stopPropagation();
           removeFavorite(fav.id);
+        });
+
+        item.addEventListener('click', () => {
+          state.channelId = fav.id;
+          resetCounter();
+          startCounter();
+          if (window.innerWidth < 1024) {
+            document.querySelector('.sidebar-favorites').classList.remove('mobile-open');
+          }
+        });
+
+        list.appendChild(item);
+      });
+    }
+
+    // Modifier la fonction setupEventListeners pour inclure des vérifications
+function setupEventListeners() {
+  // Keyboard shortcuts
+  document.addEventListener('keydown', handleKeyboardShortcuts);
+  
+  // Theme toggle
+  const themeSwitch = document.getElementById("theme-switch");
+  if (themeSwitch) {
+    themeSwitch.addEventListener('change', toggleTheme);
+  }
+  
+  // Favorite star
+  const favoriteStar = document.getElementById('favorite-star');
+  if (favoriteStar) {
+    favoriteStar.onclick = function() {
+      if (!state.channelId || !elements.channelName.textContent) return;
+      
+      if (!state.currentUser) {
+        showToast("Please sign in to save favorites");
+        return;
+      }
+      
+      if (isFavorite(state.channelId)) {
+        removeFavorite(state.channelId);
+      } else {
+        addFavorite(
+          state.channelId,
+          elements.channelName.textContent,
+          elements.channelAvatar.src
+        );
+      }
+    };
+  }
+
+  // Mobile menu button
+  const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+  if (mobileMenuBtn) {
+    mobileMenuBtn.addEventListener('click', toggleMobileSidebar);
+  }
+  
+  // Handle browser navigation
+  window.addEventListener('popstate', handleNavigation);
+}
+
+// Modifier la fonction init pour s'assurer que Firebase est chargé
+function init() {
+  try {
+    AOS.init({
+      once: true,
+      duration: 600,
+      easing: 'ease-out'
+    });
+    
+    // Attendre que le DOM soit complètement chargé
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        setupEventListeners();
+        checkUrlFragment();
+        renderFavoritesSidebar();
+        updateFavoriteStar();
+      });
+    } else {
+      setupEventListeners();
+      checkUrlFragment();
+      renderFavoritesSidebar();
+      updateFavoriteStar();
+    }
+    
+    applyDarkTheme();
+    
+    // Vérification de Firebase avec timeout
+    const FIREBASE_TIMEOUT = 5000; // 5 secondes
+    const firebaseCheck = new Promise((resolve, reject) => {
+      if (window.firebase) {
+        resolve();
+      }
+      
+      const interval = setInterval(() => {
+        if (window.firebase) {
+          clearInterval(interval);
+          resolve();
+        }
+      }, 100);
+      
+      setTimeout(() => {
+        clearInterval(interval);
+        reject(new Error('Firebase failed to load'));
+      }, FIREBASE_TIMEOUT);
+    });
+
+    firebaseCheck
+      .then(() => {
+        initAuth();
+      })
+      .catch((error) => {
+        console.error('Firebase initialization error:', error);
+        showToast('Error loading authentication system');
+      });
+      
+  } catch (error) {
+    console.error('Initialization error:', error);
+    showToast('Error initializing application');
+  }
+}
+    
+    // Firebase Authentication Setup
+    function initAuth() {
+      const auth = window.firebase.auth;
+      const signInButton = document.getElementById('sign-in-button');
+      const signOutButton = document.getElementById('sign-out-button');
+      const userProfile = document.getElementById('user-profile');
+      const authContainer = document.getElementById('auth-container');
+
+      // Handle sign in
+      signInButton.addEventListener('click', async () => {
+        try {
+          const result = await window.firebase.signInWithPopup(auth, window.firebase.provider);
+          const user = result.user;
+          
+          // Create or update user document in Firestore
+          const userDocRef = window.firebase.doc(window.firebase.db, 'users', user.uid);
+          const userDoc = await window.firebase.getDoc(userDocRef);
+          
+          if (!userDoc.exists()) {
+            await window.firebase.setDoc(userDocRef, {
+              email: user.email,
+              displayName: user.displayName,
+              photoURL: user.photoURL,
+              favorites: []
+            });
+          }
+          
+          showToast('Successfully signed in!');
+        } catch (error) {
+          console.error('Sign in error:', error);
+          showToast('Error signing in');
+        }
+      });
+
+      // Handle sign out
+      signOutButton.addEventListener('click', async () => {
+        try {
+          await window.firebase.signOut(auth);
+          state.userFavorites = [];
+          state.currentUser = null;
+          renderFavoritesSidebar();
+          updateFavoriteStar();
+          showToast('Successfully signed out!');
+        } catch (error) {
+          console.error('Sign out error:', error);
+          showToast('Error signing out');
+        }
+      });
+
+      // Listen for auth state changes
+      window.firebase.onAuthStateChanged(auth, async (user) => {
+        if (user) {
+          // User is signed in
+          state.currentUser = user;
+          signInButton.classList.add('hidden');
+          userProfile.classList.remove('hidden');
+          document.getElementById('user-name').textContent = user.displayName;
+          document.getElementById('user-avatar').src = user.photoURL;
+          
+          // Fetch user favorites
+          try {
+            const userDocRef = window.firebase.doc(window.firebase.db, 'users', user.uid);
+            const userDoc = await window.firebase.getDoc(userDocRef);
+            if (userDoc.exists()) {
+              state.userFavorites = userDoc.data().favorites || [];
+              renderFavoritesSidebar();
+              updateFavoriteStar();
+            }
+          } catch (error) {
+            console.error('Error fetching user data:', error);
+            showToast('Error loading favorites');
+          }
+        } else {
+          // User is signed out
+          state.currentUser = null;
+          state.userFavorites = [];
+          signInButton.classList.remove('hidden');
+          userProfile.classList.add('hidden');
+          renderFavoritesSidebar();
+          updateFavoriteStar();
+        }
+      });
+    }
+
+    // Save user favorites to Firestore
+    async function saveUserFavorites() {
+      if (!state.currentUser) return;
+      
+      try {
+        const userDocRef = window.firebase.doc(window.firebase.db, 'users', state.currentUser.uid);
+        await window.firebase.updateDoc(userDocRef, {
+          favorites: state.userFavorites
+        });
+      } catch (error) {
+        console.error("Error saving user favorites:", error);
+        showToast("Error saving favorites");
+      }
+    }
+    
+    // Set up event listeners
+    function setupEventListeners() {
+      // Keyboard shortcuts
+      document.addEventListener('keydown', handleKeyboardShortcuts);
+      
+      // Theme toggle
+      const themeSwitch = document.getElementById("theme-switch");
+      if (themeSwitch) {
+        themeSwitch.addEventListener('change', toggleTheme);
+      }
+      
+      // Favorite star
+      const favoriteStar = document.getElementById('favorite-star');
+      if (favoriteStar) {
+        favoriteStar.onclick = function() {
+          if (!state.channelId || !elements.channelName.textContent) return;
+          
+          if (!state.currentUser) {
+            showToast("Please sign in to save favorites");
+            return;
+          }
+          
+          if (isFavorite(state.channelId)) {
+            removeFavorite(state.channelId);
+          } else {
+            addFavorite(
+              state.channelId,
+              elements.channelName.textContent,
+              elements.channelAvatar.src
+            );
+          }
         };
+      }
+
+      // Mobile menu button
+      const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+      if (mobileMenuBtn) {
+        mobileMenuBtn.addEventListener('click', toggleMobileSidebar);
+      }
+      
+      // Handle browser navigation
+      window.addEventListener('popstate', handleNavigation);
+    }
+    
+    // Toggle mobile menu
+    function toggleMobileMenu() {
+      const sidebar = document.getElementById('sidebar-favorites');
+      sidebar.classList.toggle('hidden');
+    }
+    
+    // Handle navigation events
+    function handleNavigation() {
+      const urlFragment = window.location.hash.slice(1);
+      if (urlFragment && urlFragment !== state.channelId) {
+        resetCounter();
+        state.channelId = urlFragment;
+        startCounter();
+        updateFavoriteStar();
+      } else if (!urlFragment) {
+        resetCounter();
+        updateFavoriteStar();
+      }
+      renderFavoritesSidebar();
+    }
+    
+    // Check URL fragment for channel ID
+    function checkUrlFragment() {
+      const urlFragment = window.location.hash.slice(1);
+      if (urlFragment) {
+        state.channelId = urlFragment;
+        startCounter();
+      }
+    }
+    
+    // Start the counter
+    function startCounter() {
+      elements.counterSection.classList.remove('hidden');
+      
+      if (!state.odometer) {
+        state.odometer = new Odometer({ 
+          el: elements.subscriberCount, 
+          value: 0,
+          format: '(,ddd)',
+          theme: 'minimal'
+        });
+      }
+      
+      fetchStatsData();
+      state.intervalId = setInterval(fetchStatsData, UPDATE_INTERVAL);
+    }
+    
+    // Reset the counter
+    function resetCounter() {
+      clearInterval(state.intervalId);
+      state.intervalId = null;
+      elements.counterSection.classList.add('hidden');
+      elements.chartSection.classList.add('hidden');
+      elements.toggleChartButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2z" /></svg> Show Chart';
+      state.historicalData = [];
+      document.title = "DockyCount - YouTube Subscriber Counter";
+    }
+    
+    // Refresh counter manually
+    function refreshCounter() {
+      if (state.channelId) {
+        fetchStatsData();
+        showToast("Counter refreshed", 2000);
+      }
+    }
+    
+    // Show toast notification
+    function showToast(message, duration = 3000) {
+      elements.toast.textContent = message;
+      elements.toast.classList.remove('hidden');
+      
+      setTimeout(() => {
+        elements.toast.classList.add('hidden');
+      }, duration);
+    }
+    
+    // Handle key press in search input
+    function handleKeyPress(event) {
+      if (event.key === "Enter") {
+        fetchChannelData();
+      }
+    }
+    
+    // Handle keyboard shortcuts
+    function handleKeyboardShortcuts(event) {
+      // Ctrl+Enter to search
+      if (event.ctrlKey && event.key === 'Enter') {
+        fetchChannelData();
+      }
+      // Escape to clear search
+      if (event.key === 'Escape') {
+        elements.channelInput.value = '';
+      }
+    }
+    
+    // Fetch channel data based on search input
+    async function fetchChannelData() {
+      const channelName = elements.channelInput.value.trim();
+      if (!channelName) {
+        showToast("Please enter a channel name");
+        return;
+      }
+
+      elements.loader.classList.remove('hidden');
+      elements.searchText.classList.add('hidden');
+      
+      try {
+        const response = await fetch(`${SEARCH_API_URL}${encodeURIComponent(channelName)}`);
+        if (!response.ok) throw new Error('Network response was not ok');
+        
+        const data = await response.json();
+        elements.loader.classList.add('hidden');
+        elements.searchText.classList.remove('hidden');
+        
+        if (!data.list?.length) {
+          showToast("Channel not found");
+          return;
+        }
+
+        displayChannelResults(data.list);
+      } catch (error) {
+        console.error("Error fetching channel data:", error);
+        elements.loader.classList.add('hidden');
+        elements.searchText.classList.remove('hidden');
+        showToast("Error fetching channel data");
+      }
+    }
+    
+    // Display channel search results
+    function displayChannelResults(channels) {
+      elements.resultsGrid.innerHTML = "";
+      elements.resultsSection.classList.remove('hidden');
+      
+      channels.forEach((channel) => {
+        const channelElement = document.createElement("div");
+        channelElement.className = "glass-card p-4 cursor-pointer transition-all hover:scale-105 channel-card";
+        channelElement.innerHTML = `
+          <img src="${channel[3]}" alt="${channel[0]}" class="channel-avatar w-16 h-16 rounded-full mx-auto mb-3">
+          <div class="channel-name text-center font-medium">${channel[0]}</div>
+        `;
+        
+        channelElement.onclick = () => {
+          const newUrl = `${window.location.origin}${window.location.pathname}#${channel[2]}`;
+          window.history.pushState({}, '', newUrl);
+
+          state.channelId = channel[2];
+          resetCounter();
+          startCounter();
+          elements.resultsSection.classList.add('hidden');
+        };
+        
+        elements.resultsGrid.appendChild(channelElement);
+      });
+    }
+    
+    // Initialize chart
+    function initializeChart() {
+      const ctx = document.getElementById('subscriberChart').getContext('2d');
+      
+      state.subscriberChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: [],
+          datasets: [{
+            label: 'Subscribers',
+            data: [],
+            borderColor: '#8B5CF6',
+            backgroundColor: 'rgba(139, 92, 246, 0.1)',
+            borderWidth: 3,
+            tension: 0.1,
+            pointRadius: 0,
+            fill: true
+          }]
+        },
+        options: {
+          animation: false,
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false
+            },
+            tooltip: {
+              mode: 'index',
+              intersect: false,
+              callbacks: {
+                label: function(context) {
+                  return `${context.parsed.y.toLocaleString()}`;
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              display: false,
+              grid: {
+                display: false
+              }
+            },
+            y: {
+              display: false,
+              grid: {
+                color: 'rgba(255, 255, 255, 0.1)',
+                drawBorder: false
+              },
+              ticks: {
+                color: 'rgba(255, 255, 255, 0.6)',
+                callback: function(value) {
+                  if (value >= 1000000) {
+                    return (value / 1000000).toFixed(1) + 'M';
+                  }
+                  if (value >= 1000) {
+                    return (value / 1000).toFixed(1) + 'K';
+                  }
+                  return value;
+                }
+              }
+            }
+          },
+          interaction: {
+            mode: 'nearest',
+            axis: 'x',
+            intersect: false
+          }
+        }
+      });
+    }
+    
+    // Update chart with new data
+    function updateChart(count) {
+      const now = new Date();
+      const timeString = now.toLocaleTimeString();
+      
+      // Add new data point
+      state.historicalData.push({
+        time: timeString,
+        count: count
+      });
+      
+      // Keep only the last MAX_DATA_POINTS
+      if (state.historicalData.length > MAX_DATA_POINTS) {
+        state.historicalData.shift();
+      }
+      
+      // Initialize chart if not already done
+      if (!state.subscriberChart) {
+        initializeChart();
+      }
+      
+      // Update chart data
+      state.subscriberChart.data.labels = state.historicalData.map(data => data.time);
+      state.subscriberChart.data.datasets[0].data = state.historicalData.map(data => data.count);
+      state.subscriberChart.update();
+    }
+    
+    // Fetch stats data for the current channel
+    async function fetchStatsData() {
+      try {
+        const response = await fetch(`${API_BASE_URL}${state.channelId}`);
+        
+        if (response.ok) {
+          const data = await response.json();
+          
+          if (data?.items?.length > 0) {
+            const channel = data.items[0];
+            updateChannelInfo(channel);
+            
+            if (channel.statistics && typeof channel.statistics.subscriberCount === "number") {
+              const subscriberCount = channel.statistics.subscriberCount;
+              updateSubscriberCount(subscriberCount);
+              
+              // Calculate and display subscriber change
+              if (state.lastSubscriberCount > 0) {
+                const change = subscriberCount - state.lastSubscriberCount;
+                updateSubscriberChange(change);
+              }
+              
+              state.lastSubscriberCount = subscriberCount;
+              updateChart(subscriberCount);
+            }
+          }
+        } else {
+          console.error("Failed to fetch stats data: ", response.statusText);
+        }
+      } catch (error) {
+        console.error("Error fetching stats data:", error);
+      }
+    }
+    
+    // Update subscriber count display
+    function updateSubscriberCount(count) {
+      if (!state.odometer) {
+        state.odometer = new Odometer({ 
+          el: elements.subscriberCount, 
+          value: count,
+          format: '(,ddd)',
+          theme: 'minimal'
+        });
+      } else {
+        state.odometer.update(count);
+      }
+    }
+
+    // Update subscriber change display
+    function updateSubscriberChange(change) {
+      const changeElement = elements.subscriberChange;
+      if (change === 0) {
+        changeElement.innerHTML = "&rarr; No change";
+        changeElement.className = "subscriber-change text-gray-400";
+      } else if (change > 0) {
+        changeElement.innerHTML = `&uarr; +${change.toLocaleString()}`;
+        changeElement.className = "subscriber-change text-green-500";
+      } else {
+        changeElement.innerHTML = `&darr; ${change.toLocaleString()}`;
+        changeElement.className = "subscriber-change text-red-500";
+      }
+    }
+
+    // Apply dark theme
+    function applyDarkTheme() {
+      elements.body.classList.add('dark-mode');
+      if (state.subscriberChart) {
+        state.subscriberChart.data.datasets[0].borderColor = '#8B5CF6';
+        state.subscriberChart.data.datasets[0].backgroundColor = 'rgba(139, 92, 246, 0.1)';
+        state.subscriberChart.update();
+      }
+    }
+
+    // Apply light theme
+    function applyLightTheme() {
+      elements.body.classList.remove('dark-mode');
+      if (state.subscriberChart) {
+        state.subscriberChart.data.datasets[0].borderColor = '#6366f1';
+        state.subscriberChart.data.datasets[0].backgroundColor = 'rgba(99, 102, 241, 0.1)';
+        state.subscriberChart.update();
+      }
+    }
+
+    // Toggle theme function
+    function toggleTheme() {
+      state.isDarkTheme = !state.isDarkTheme;
+      localStorage.setItem('theme', state.isDarkTheme ? 'dark' : 'light');
+      if (state.isDarkTheme) {
+        applyDarkTheme();
+      } else {
+        applyLightTheme();
+      }
+    }
+    
+    // FAVORITES SYSTEM WITH FIREBASE
+    // Add channel to favorites
+    function addFavorite(channelId, name, avatar) {
+      if (!state.currentUser) {
+        showToast("Please sign in to save favorites");
+        return;
+      }
+      
+      if (!state.userFavorites.some(f => f.id === channelId)) {
+        state.userFavorites.push({ id: channelId, name, avatar });
+        saveUserFavorites();
+        showToast("Channel added to favorites!", 1500);
+        updateFavoriteStar();
+        renderFavoritesSidebar();
+      }
+    }
+
+    // Remove channel from favorites
+    function removeFavorite(channelId) {
+      state.userFavorites = state.userFavorites.filter(f => f.id !== channelId);
+      saveUserFavorites();
+      showToast("Channel removed from favorites!", 1500);
+      updateFavoriteStar();
+      renderFavoritesSidebar();
+    }
+
+    // Check if channel is favorite
+    function isFavorite(channelId) {
+      return state.userFavorites.some(f => f.id === channelId);
+    }
+
+    // Update favorite star UI
+    function updateFavoriteStar() {
+      const star = document.getElementById('favorite-star');
+      if (!state.channelId) {
+        star.classList.add('inactive');
+        star.innerHTML = '&#9734;';
+        star.title = "Add to favorites";
+        return;
+      }
+      if (isFavorite(state.channelId)) {
+        star.classList.remove('inactive');
+        star.innerHTML = '&#9733;';
+        star.title = "Remove from favorites";
+      } else {
+        star.classList.add('inactive');
+        star.innerHTML = '&#9734;';
+        star.title = "Add to favorites";
+      }
+    }
+
+    // Render sidebar favorites
+    function renderFavoritesSidebar() {
+      const list = document.getElementById('favorites-list');
+      if (!list) return;
+
+      list.innerHTML = '';
+      
+      if (!state.currentUser) {
+        list.innerHTML = '<div class="text-gray-500 text-sm p-4 text-center">Sign in to save favorites</div>';
+        return;
+      }
+      
+      if (!state.userFavorites?.length) {
+        list.innerHTML = '<div class="text-gray-500 text-sm p-4 text-center">No favorite channels yet</div>';
+        return;
+      }
+
+      state.userFavorites.forEach(fav => {
+        const item = document.createElement('div');
+        item.className = 'favorite-channel flex items-center p-3 rounded-lg hover:bg-gray-800 cursor-pointer transition-colors mb-2';
+        item.innerHTML = `
+          <img src="${fav.avatar}" class="w-10 h-10 rounded-full mr-3" alt="${fav.name}" onerror="this.src='https://via.placeholder.com/40'">
+          <span class="flex-1 truncate">${fav.name}</span>
+          <button class="remove-favorite p-1 hover:text-red-500 transition-colors" title="Remove from favorites">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+            </svg>
+          </button>
+        `;
+
+        item.querySelector('.remove-favorite').addEventListener('click', (e) => {
+          e.stopPropagation();
+          removeFavorite(fav.id);
+        });
+
+        item.addEventListener('click', () => {
+          state.channelId = fav.id;
+          resetCounter();
+          startCounter();
+          if (window.innerWidth < 1024) {
+            document.querySelector('.sidebar-favorites').classList.remove('mobile-open');
+          }
+        });
+
         list.appendChild(item);
       });
     }
@@ -1665,14 +3154,14 @@ function init() {
     function toggleChart() {
       if (elements.chartSection.classList.contains('hidden')) {
         elements.chartSection.classList.remove('hidden');
-        elements.toggleChartButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg> Hide Chart';
+        elements.toggleChartButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg> Hide Chart';
         if (!state.subscriberChart && state.historicalData.length > 0) {
           initializeChart();
           updateChart(state.historicalData[state.historicalData.length - 1].count);
         }
       } else {
         elements.chartSection.classList.add('hidden');
-        elements.toggleChartButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg> Show Chart';
+        elements.toggleChartButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg> Show Chart';
       }
     }
 
